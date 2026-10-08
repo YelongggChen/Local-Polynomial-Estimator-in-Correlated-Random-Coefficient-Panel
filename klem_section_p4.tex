@@ -1,0 +1,400 @@
+% =====================================================================
+%  Section for the main paper: T = p = 4 application to the ENIA census.
+%  Requires: booktabs, amsmath, graphicx.
+%  Figures: fig_scatter.pdf, fig_ghat.pdf
+% =====================================================================
+
+\section{Application: heterogeneous input elasticities in Chilean
+manufacturing}
+\label{sec:chile}
+
+\subsection{Specification}
+
+Production function estimation is the canonical setting in which a coefficient
+that is almost certainly heterogeneous is nevertheless restricted to be common
+across units. In the control-function approach of \citet{OlleyPakes1996} and
+\citet{LevinsohnPetrin2003}, and in the refinements of \citet{ACF2015} and
+\citet{GNR2020}, the entire apparatus of proxy variables is devoted not to the
+elasticities but to the \emph{intercept}: the unobserved productivity term
+$\omega_{it}$ that is correlated with input choices and generates the
+transmission bias. The elasticities themselves are assumed common.
+
+The correlated random coefficient model inverts this division of labour. We
+estimate the gross-output production function
+\begin{equation}
+  y_{it} \;=\; X_{it}'(\beta_i + \delta_t) \;+\; \varepsilon_{it},
+  \qquad
+  X_{it} \;=\; (1,\; k_{it},\; l_{it},\; x_{it})',
+  \qquad t = 1,\dots,4,
+  \label{eq:klm}
+\end{equation}
+where $y$ is log real gross output, $k$ and $l$ are logs of the real capital
+stock and employment, and $x$ is the log of real intermediate inputs,
+constructed as the sum of deflated materials and energy. This is the
+single-intermediate-input form used by \citet{GNR2020}; aggregating materials
+and energy is not a concession here but a choice we return to in
+Section~\ref{sec:designsize}, since it materially improves what the design can
+resolve.
+
+The plant-specific intercept $\beta_{i1}$ absorbs $\omega_i$ directly, so no
+proxy variable and no monotonicity condition is required. In exchange, all
+three elasticities may vary across plants and be correlated with the input
+history. The vector $\delta_t$ is a common drift that shifts the entire
+coefficient vector in period $t$, allowing the technology itself to move over
+the window while $\beta_i$ carries the permanent plant-specific component. We
+normalise $\delta_1 = 0$, so the estimand $\mathbb{E}[\beta_i]$ is the average
+elasticity vector anchored at the first year of the window.
+
+With $p = 4$ coefficients the model is just identified at $T = 4$, which places
+it in the irregular case of Section~3. Writing $X_i$ for the $4 \times 4$
+design matrix whose rows are $X_{it}'$, and $W_i$ for the $T \times Q$ matrix
+whose $t$th row places $X_{it}'$ in block $t-1$ and is zero elsewhere
+($Q = (T-1)p = 12$), the determinant
+\begin{equation*}
+  h_i \;=\; |\det(X_i)|
+\end{equation*}
+governs identification. A plant with $h_i$ near zero has moved its input bundle
+along a nearly degenerate path over the four years, and its coefficient vector
+is not separately identified. The economic content of the model is that such
+plants differ systematically from the rest: a plant reallocates inputs
+precisely when its own returns to doing so are high, so
+$g(h) = \mathbb{E}[\beta_i \mid h_i = h]$ is not constant and the trimmed
+estimator of \citet{GrahamPowell2012} is biased for the average partial effect.
+
+Estimation proceeds in two steps. Since
+$\operatorname{adj}(X_i)X_i = \det(X_i)I$, premultiplying \eqref{eq:klm} by
+$\operatorname{adj}(X_i)$ annihilates $\beta_i$ whenever $\det(X_i) = 0$,
+leaving
+\begin{equation}
+  \operatorname{adj}(X_i)\,Y_i \;=\; \operatorname{adj}(X_i)\,W_i\,\delta
+                                 \;+\; \operatorname{adj}(X_i)\,\varepsilon_i .
+  \label{eq:driftstep}
+\end{equation}
+The drift is therefore identified off the stayers alone, and $\hat\delta$ is
+the least squares coefficient in \eqref{eq:driftstep} over units with
+$h_i \leq h_0$. The coefficient step then runs on the drift-purged outcome
+$\tilde Y_i = Y_i - W_i\hat\delta$, giving
+$\hat\beta_i = \operatorname{adj}(X_i)\tilde Y_i/\det(X_i)$ for movers.
+
+The trimming threshold thus does double duty: it defines the mover sample and
+simultaneously the stayer sample identifying $\delta$. Lowering $p_0$ reduces
+the bias of the coefficient step but shrinks the sample available for the drift
+step, and since $\hat\delta$ enters $\tilde Y_i$ for \emph{every} plant, noise
+in the drift step contaminates movers as well as stayers. This tension is the
+organising constraint of the section, and it is why the size of the design is
+not innocuous: $Q$ grows as $(T-1)p$, so each additional regressor in a
+just-identified design adds $2p-1$ parameters that must be recovered from a
+shrinking subsample.
+
+\subsection{Data and design}
+
+We use the full Encuesta Nacional Industrial Anual, the annual census of
+Chilean manufacturing plants with at least ten employees, covering 1979--1996:
+86{,}186 plant-year observations on 10{,}927 plants. Real gross output, real
+materials, real energy and the real capital stock (buildings, machinery and
+vehicles, mid-year) are sectorally deflated series; the capital stocks are
+those of \citet{Greenstreet2007}, built by a permanent inventory procedure
+separately for structures, equipment and transportation. Labour is the total
+employment headcount. We access the census through the replication package of
+\citet{Raval2023}, and depart from his construction in using the mid-year real
+capital stock rather than a rental-cost aggregate, since the auxiliary
+depreciation and interest-rate files his code merges are not needed for our
+purpose.
+
+Estimating \eqref{eq:klm} requires plants observed in four \emph{consecutive}
+years with strictly positive output and all inputs. Coverage is remarkably flat
+across the sample period, with every window from 1987 onwards retaining between
+3{,}250 and 3{,}414 plants; we use 1992--1995, which retains the most
+(3{,}414) and sits in the post-stabilisation period rather than spanning the
+debt crisis. Because each plant contributes a single observation, the units are
+independent and no clustering is required. Table~\ref{tab:design} reports the
+design diagnostics of Section~2.
+
+\begin{table}[t]
+\centering
+\caption{Design diagnostics, ENIA 1992--1995}
+\label{tab:design}
+\begin{tabular}{lc}
+\toprule
+Plants ($N$), each observed $T = 4$ years        & 3{,}414 \\
+Coefficients ($p$)                               & 4 \\
+Drift parameters ($Q = (T-1)p$)                  & 12 \\
+$\pi_0 = \Pr(\det X_i = 0)$ (exact atom)         & 0.0076 \\
+Median $h_i$                                     & $5.97 \times 10^{-3}$ \\
+$h_i$ at the 10th percentile                     & $5.05 \times 10^{-4}$ \\
+Median $\operatorname{cond}(X_i)$                & $5.9 \times 10^{3}$ \\
+$\hat a$ in $f(h) \sim h^{a}$                    & $-0.320$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+\begin{minipage}{0.92\textwidth}
+\footnotesize \emph{Notes.} $\hat a$ is the slope of $\log \hat f(h)$ on
+$\log h$ over the lowest three deciles of $h$, from a reflected Epanechnikov
+density estimate.
+\end{minipage}
+\end{table}
+
+Two features matter. First, $\hat a \approx 0$: the density of the determinant
+is bounded away from zero at the boundary, the thick-boundary regime $a < 1$ of
+Theorem~1 in which the trimmed estimator converges more slowly than $\sqrt N$.
+Second, the point mass at $\det X_i = 0$ is negligible. Requiring a
+$4 \times 4$ design to be exactly singular is far more demanding than requiring
+one input to be unchanged between two adjacent years, and under $1\%$ of plants
+satisfy it. Assumption~4(d) is therefore not in question, and the trimming
+proportion is a free choice rather than something the data forces.
+
+We use that freedom to keep it small. Every estimate in Table~\ref{tab:main}
+trims at most $10\%$ of plants. The bias of the trimmed estimator is
+proportional to $p_0$, so holding $p_0$ below one tenth keeps the estimand
+close to the average partial effect over the whole population rather than over
+an endogenously selected subpopulation of movers. The costs are the ones noted
+above---retained ill-conditioned designs, and a thinner stayer sample for the
+drift step---and we let the standard errors display them rather than buying
+precision by trimming a quarter of the sample.
+
+\subsection{Is there heterogeneity to speak of?}
+
+Equation~\eqref{eq:klm} is exactly identified, so within-plant residuals vanish
+and the model cannot test its own homogeneity restriction. We add a fifth year,
+1996, which leaves 3{,}158 plants with one residual degree of freedom apiece.
+Estimating $\delta$ by pooled least squares on the interacted design, purging
+it from the outcome and then fitting plant-specific regressions gives
+$\hat\sigma = 0.130$, and the \citet{Swamy1970} statistic for
+$H_0: \beta_i = \beta$ for all $i$ is $S = 1.19 \times 10^{5}$ on $12{,}580$
+degrees of freedom. Homogeneity is rejected overwhelmingly. The dispersion is
+economically large as well: among movers the interquartile range of
+$\hat\beta_i$ is $1.19$ for intermediates and $2.15$ for capital, and $0.93$
+and $1.39$ respectively in the better-conditioned half of the sample where
+estimation error contributes less.
+
+Heterogeneity alone does not require the machinery of this paper; only
+heterogeneity \emph{correlated} with the determinant does. We regress the
+estimated individual coefficients on $h_i$ among movers,
+\begin{equation}
+  \hat\beta_{i,p} \;=\; \alpha_p + \kappa_p h_i + e_{ip},
+  \label{eq:kappa}
+\end{equation}
+weighting by $h_i^2$, which is proportional to the inverse conditional variance
+when the $\Sigma_v(h_i)/h_i^{2}$ term dominates. Unweighted least squares is
+uninformative here, being dominated by near-boundary observations that carry
+almost no information about $g$.
+
+\begin{table}[t]
+\centering
+\caption{Selection gradient $\hat\kappa_p$ in \eqref{eq:kappa}}
+\label{tab:kappa}
+\begin{tabular}{lccc}
+\toprule
+& $\hat\kappa$ & $t$ & $p$ \\
+\midrule
+Capital       & $-0.039$ & $-0.85$ & $0.393$ \\
+Labour        & $-0.581$ & $-7.03$ & $<0.001$ \\
+Intermediates & $\phantom{-}0.515$ & $\phantom{-}4.29$ & $<0.001$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+\begin{minipage}{0.92\textwidth}
+\footnotesize \emph{Notes.} Movers only, trimming at $10\%$
+($N_{\text{mov}} = 3{,}072$, $342$ stayers). Weighted by $h_i^2$;
+heteroskedasticity-robust standard errors.
+\end{minipage}
+\end{table}
+
+Labour and intermediates show sharp gradients of opposite sign; capital does
+not. Plants whose input bundle moves least have markedly \emph{higher}
+estimated labour elasticities and lower intermediate elasticities. This is the
+configuration in which the trimmed estimator is biased and an extrapolation
+estimator is called for.
+
+Figure~\ref{fig:scatter} plots the individual coefficient estimates against
+$h_i$ with the trimmed region shaded, and Figure~\ref{fig:ghat} the local
+linear estimate of $g$ with its extrapolation to the boundary. Both display the
+$h_i^{-2}$ heteroskedasticity plainly: the cloud fans out sharply as $h_i$
+approaches the threshold and the confidence band for $\hat g$ widens in the
+same region. The labour panel of Figure~\ref{fig:ghat} shows the gradient of
+Table~\ref{tab:kappa} directly, $\hat g$ rising steeply as $h \to h_0$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_scatter.pdf}
+\caption{Individual coefficient estimates $\hat\beta_{i,p}$ against
+$h_i = |\det X_i|$, ENIA 1992--1995. Shaded region: units trimmed at
+$h_0 = q_{10}(h)$. Vertical axes truncated at the 97th percentile of
+$|\hat\beta_{i,p}|$.}
+\label{fig:scatter}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig_ghat.pdf}
+\caption{Local linear estimate of $g(h) = \mathbb{E}[\beta_i \mid h_i = h]$
+among movers (solid), with 90\% bootstrap band, and its linear extrapolation
+into the trimmed region (dashed). Shaded region as in
+Figure~\ref{fig:scatter}.}
+\label{fig:ghat}
+\end{figure}
+
+\subsection{The estimated drift}
+\label{sec:drift}
+
+Table~\ref{tab:drift} reports $\hat\delta_t$ at the $10\%$ threshold, where
+$342$ stayers identify the twelve parameters.
+
+\begin{table}[t]
+\centering
+\caption{Estimated coefficient drift $\hat\delta_t$, $10\%$ trimming
+(1992 normalised to zero)}
+\label{tab:drift}
+\begin{tabular}{lcccc}
+\toprule
+& Intercept & Capital & Labour & Intermediates \\
+\midrule
+1993 & $-0.459$ & $-0.065$ & $\phantom{-}0.008$ & $0.091$ \\
+     & (0.245) & (0.034) & (0.066) & (0.039) \\
+1994 & $-1.270$ & $-0.108$ & $-0.082$ & $0.227$ \\
+     & (0.429) & (0.052) & (0.121) & (0.065) \\
+1995 & $-1.630$ & $-0.107$ & $-0.169$ & $0.286$ \\
+     & (0.541) & (0.065) & (0.162) & (0.085) \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+\begin{minipage}{0.92\textwidth}
+\footnotesize \emph{Notes.} $\hat\delta$ from \eqref{eq:driftstep}, estimated
+on the $342$ units with $h_i \leq h_0 = q_{10}(h)$. Bootstrap standard errors
+over plants, 400 replications.
+\end{minipage}
+\end{table}
+
+The drift is real and economically legible. A Wald test of $\delta = 0$ against
+the bootstrap covariance gives $23.94$ on twelve degrees of freedom
+($p = 0.021$). The intermediate component rises monotonically---$0.091$,
+$0.227$, $0.286$ across 1993--95, each more than two standard errors from
+zero---while the capital and intercept components fall. Read literally, the
+return to intermediate inputs rose over the window while the return to capital
+declined, holding the plant-specific component fixed. Imposing
+$\delta \equiv 0$ would therefore be a substantive restriction rather than a
+simplification, which matters because the restriction is tempting: it is the
+drift step, not the coefficient step, that makes low trimming expensive.
+
+\subsection{Estimates}
+
+\begin{table}[t]
+\centering
+\caption{Average input elasticities, ENIA 1992--1995}
+\label{tab:main}
+\begin{tabular}{lcccc}
+\toprule
+Trimmed & Stayers & Capital & Labour & Intermediates \\
+\midrule
+\multicolumn{5}{l}{\emph{Panel A: Graham--Powell trimmed estimator}} \\
+\phantom{0}2\% & \phantom{0}69 & $0.175$ & $0.482$ & $0.047$ \\
+               &     & (0.532) & (0.482) & (0.303) \\
+\phantom{0}4\% & 137 & $0.297$ & $0.592$ & $0.294$ \\
+               &     & (0.213) & (0.338) & (0.164) \\
+\phantom{0}6\% & 205 & $0.205$ & $0.374$ & $0.334$ \\
+               &     & (0.196) & (0.299) & (0.124) \\
+\phantom{0}8\% & 274 & $0.107$ & $0.303$ & $0.286$ \\
+               &     & (0.184) & (0.272) & (0.127) \\
+10\%           & 342 & $0.145$ & $0.287$ & $0.380$ \\
+               &     & (0.177) & (0.234) & (0.103) \\
+\midrule
+\multicolumn{5}{l}{\emph{Panel B: local polynomial correction}} \\
+\phantom{0}2\% & \phantom{0}69 & $0.195$ & $0.527$ & $0.012$ \\
+\phantom{0}4\% & 137 & $0.306$ & $0.561$ & $0.307$ \\
+\phantom{0}6\% & 205 & $0.196$ & $0.391$ & $0.335$ \\
+\phantom{0}8\% & 274 & $0.076$ & $0.358$ & $0.288$ \\
+10\%           & 342 & $0.121$ & $0.354$ & $0.378$ \\
+\midrule
+\multicolumn{5}{l}{\emph{Panel C: common-coefficient benchmarks}} \\
+Pooled OLS, 1992 base & & $0.112$ & $0.224$ & $0.715$ \\
+Pooled OLS, year mean & & $0.112$ & $0.238$ & $0.704$ \\
+Within, 1992 base     & & $0.044$ & $0.257$ & $0.486$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+\begin{minipage}{0.92\textwidth}
+\footnotesize \emph{Notes.} $N = 3{,}414$ plants, $T = p = 4$. Local polynomial
+estimator uses $m = 1$, $c = b/h_0 = 30$ and inverse-variance weights. Drift
+estimated as in Table~\ref{tab:drift} and subtracted before the coefficient
+step. Standard errors from 400 bootstrap replications over plants; Panel~B
+estimates carry standard errors within $0.02$ of the corresponding Panel~A
+entries and are omitted. Panel~C estimates
+$y_{it} = X_{it}'(\beta + \delta_t)$ by pooled and within least squares. All
+thresholds are at or below $10\%$ by design.
+\end{minipage}
+\end{table}
+
+The intermediate-input elasticity is the coefficient this design resolves. From
+$4\%$ trimming onwards it sits between $0.29$ and $0.38$ with standard errors
+falling from $0.164$ to $0.103$, and it lies well below both the pooled OLS
+value of $0.70$ and the within value of $0.49$. At the $10\%$ threshold the gap
+to pooled OLS is more than three standard errors. Allowing the elasticity to be
+plant-specific and correlated with input history therefore lowers the average
+substantially relative to the common-coefficient estimate---which is the kind
+of quantity the model exists to deliver, and which no amount of proxy-variable
+machinery would recover, since the proxies are aimed at the intercept.
+
+Capital and labour are estimated less precisely. Both remain positive and in
+the neighbourhood of the benchmark values throughout, and neither shows the
+sign instability that would signal a broken design, but with standard errors of
+$0.18$ and $0.23$ at the $10\%$ threshold we would not report either as a point
+estimate. The ordering is not accidental: the conditional variance of
+$\hat\beta_i$ is governed by the corresponding row of
+$\operatorname{adj}(X_i)$, and intermediate inputs are adjusted far more freely
+across years than capital or headcount, so their coefficient is the one the
+determinant can resolve.
+
+The $2\%$ row should be read with care and we would not build on it. It trims
+so little that only $69$ stayers remain to identify twelve drift parameters,
+and its instability---the intermediate elasticity collapsing to $0.047$---is
+a property of the drift step rather than of the coefficients.
+
+Finally, under coefficient homogeneity the average partial effect and the
+within estimator estimate the same object; under \emph{correlated}
+heterogeneity they do not. Bootstrapping the difference at the $10\%$
+threshold, no individual difference exceeds one standard error and the joint
+Wald statistic is $1.64$ on three degrees of freedom ($p = 0.65$). Given the
+standard errors in Table~\ref{tab:main} this is a statement about power rather
+than about the absence of correlated heterogeneity: homogeneity is decisively
+rejected, the gradients in Table~\ref{tab:kappa} are sharp for two of three
+inputs, and the point estimate for intermediates differs from the within value
+by $0.11$---but the design cannot convert that into a statistically
+distinguishable revision of the average.
+
+\subsection{Design size is a design choice}
+\label{sec:designsize}
+
+The specification in \eqref{eq:klm} aggregates materials and energy into a
+single intermediate input. Because $Q = (T-1)p$, disaggregating them is far
+from free: it raises the design from $T = p = 4$ to $T = p = 5$, the drift
+parameters from twelve to twenty, and---since five consecutive years are then
+required---lowers $N$ from 3{,}414 to 3{,}133 and the stayer count at
+$p_0 = 0.10$ from $342$ to $314$. Estimating the larger model on the same
+census and at the same thresholds, no elasticity is recovered with useful
+precision: the materials coefficient moves between $0.15$ and $0.46$ across the
+sub-$10\%$ grid with standard errors of $0.14$ to $0.39$, against $0.29$ to
+$0.38$ with standard errors of $0.10$ to $0.16$ here.
+
+This is worth stating as a practical lesson, because the instinct in applied
+work runs the other way: a richer input list looks like a more faithful
+technology. In a just-identified correlated random coefficient design it is not
+free, and the price is paid twice---once in the conditioning of $X_i$ and again
+in the number of drift parameters the stayers must support. Aggregation to a
+composite that still \emph{moves} is preferable to disaggregation into
+components that do not, which is also why dropping labour rather than
+aggregating intermediates would be the wrong economy: labour is the input whose
+stickiness generates near-singular designs in the first place.
+
+That stickiness is visible throughout. Labour carries the sharpest selection
+gradient of any coefficient in Table~\ref{tab:kappa} while having among the
+least precise averages, and it is integer headcounts that generate what atom
+remains at $\det X_i = 0$. In the two-period designs common in this literature,
+where a single lumpy input is allowed to vary, the same stickiness produces
+atoms above a quarter, $p_0$ is bounded below by $\pi_0$, and the trimmed
+estimator is inconsistent rather than merely biased. The four-period census
+design escapes that regime, and the diagnostics of Table~\ref{tab:design} are
+what tell an applied researcher in advance which regime they are in.
